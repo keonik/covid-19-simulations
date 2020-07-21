@@ -1,32 +1,32 @@
 {
-  "name": "covid-19-simulations",
-  "version": "0.0.1",
-  "description": "Covid 19 Simulations in json",
-  "main": "index.js",
-  "dependencies": {
-    "@babel/core": "^7.10.5",
-    "@babel/node": "^7.10.5",
-    "@babel/preset-env": "^7.10.4",
-    "d3-dsv": "^1.2.0"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "build": "babel-node scripts/parse-IHME.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/keonik/covid-19-simulations.git"
-  },
-  "keywords": [
-    "covid",
-    "covid-19",
-    "simulations",
-    "json"
-  ],
-  "author": "John Fay",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/keonik/covid-19-simulations/issues"
-  },
-  "homepage": "https://github.com/keonik/covid-19-simulations#readme"
+    "name": "covid-19-simulations",
+    "version": "0.0.1",
+    "description": "Covid 19 Simulations in json",
+    "main": "index.js",
+    "dependencies": {
+        "@babel/core": "^7.10.5",
+        "@babel/node": "^7.10.5",
+        "@babel/preset-env": "^7.10.4",
+        "d3-dsv": "^1.2.0"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "build": "babel-node --max-old-space-size=16384 scripts/parse-IHME.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/keonik/covid-19-simulations.git"
+    },
+    "keywords": [
+        "covid",
+        "covid-19",
+        "simulations",
+        "json"
+    ],
+    "author": "John Fay",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/keonik/covid-19-simulations/issues"
+    },
+    "homepage": "https://github.com/keonik/covid-19-simulations#readme"
 }

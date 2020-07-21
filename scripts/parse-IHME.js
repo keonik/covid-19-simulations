@@ -5,13 +5,60 @@ const ihmeFile = fs.readFileSync('./public/files/SimCommandIHME-latest.csv', 'ut
 
 const ihmeSimData = d3.csvParse(ihmeFile);
 
-const geoOrganization = [
-    { value: 'G', label: 'Country', organizations: [] },
-    { value: 'S', label: 'States', organizations: [] },
-    { value: 'B', label: 'US Bases', organizations: [] },
-    { value: 'C', label: 'US Counties', organizations: [] },
+const geoOrganizations = [
+    { value: 'G', label: 'Country', disabled: false, locations: [], folder: 'data/countries' },
+    { value: 'S', label: 'States', disabled: false, locations: [], folder: 'data/states' },
+    { value: 'B', label: 'US Bases', disabled: true, locations: [], folder: 'data/bases' },
+    { value: 'C', label: 'US Counties', disabled: false, locations: [], folder: 'data/counties' },
 ];
 const geoLocations = [];
+
+function pushToGeoOrganization(Type_Indicator, Location, FIPS) {
+    switch (Type_Indicator) {
+        case 'G': {
+            geoOrganizations[0].locations.push({ value: FIPS, label: Location });
+            break;
+        }
+        case 'S': {
+            geoOrganizations[1].locations.push({ value: FIPS, label: Location });
+            break;
+        }
+        case 'B': {
+            geoOrganizations[2].locations.push({ value: FIPS, label: Location });
+            break;
+        }
+        case 'C': {
+            geoOrganizations[3].locations.push({ value: FIPS, label: Location });
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+function formatPoints(PredictionTSDays, index) {
+    const points = [];
+    // all prediction values into array [{x: null, y :Date}, {x: 0, y: Date}]
+    PredictionTSDays.forEach((rowName) => {
+        const y = rowName.replace('Prediction_TS_Day_', '');
+        const value = parseFloat(ihmeSimData[index][rowName]);
+
+        if (value) {
+            if (value > 0) {
+                points.push({ x: +parseInt(value), y });
+            }
+            // set minimum 0 (show no negatives)
+            else {
+                points.push({ x: 0, y });
+            }
+        } else {
+            // push null to avoid rendering unneeded data in plots/charts
+            points.push({ x: null, y });
+        }
+    });
+
+    return points;
+}
 
 const rowRegex = new RegExp('Prediction_TS_Day_');
 const predictionsTSDays = [];
@@ -28,18 +75,54 @@ ihmeSimData.columns.forEach((col, index) => {
         // this is the row before geoLocations
     } else if (col === 'VizN_Date') {
         startGeoLocations = index;
-        // geoLocations have started...add them to array
+        // geoLocations have started...add them to array // exclude NAF's
     } else if (startGeoLocations >= 0 && !geoLocations.find(({ value }) => value === col) && !col.startsWith('NAF')) {
         geoLocations.push({ value: col, label: col, locations: [] });
     }
 });
 
 ihmeSimData.forEach((row, index) => {
-    if (index < 10) {
-        console.log(row.Location);
+    const { Sim_ID, Location, FIPS, Type_Indicator, Run_Type } = row;
+
+    const geoOrg = geoOrganizations.find(({ value }) => value === Type_Indicator);
+
+    const parentLocation = geoLocations.find(({ value }) => +row[value] === 1);
+    const { locations } = parentLocation;
+
+    const locationExists = locations.find(({ value }) => value === +FIPS);
+
+    // xy points
+    const points = formatPoints(predictionsTSDays, index);
+
+    // Location hasn't been added yet
+    if (!locationExists) {
+        // add Location to appropriate org based on Type_Indicator
+        pushToGeoOrganization(Type_Indicator, Location, FIPS);
+
+        locations.push({
+            value: +FIPS,
+            label: Location,
+            indicator: Type_Indicator,
+            startDate: predictionsTSDays[0].replace('Prediction_TS_Day_', ''),
+            predictions: [{ id: +Sim_ID, runType: Run_Type, values: points }],
+        });
+    } else {
+        const locationIndex = locations.findIndex(({ value }) => value === +FIPS);
+        locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points });
     }
 });
 
-fs.writeFileSync('./data/selectors/geo-locations.json', JSON.stringify(geoLocations), 'utf8');
+geoLocations.forEach((parentLocation) => {
+    parentLocation.locations.forEach((location) => {
+        const orgFolder = geoOrganizations.find(({ value }) => value === location.indicator)?.folder;
 
-console.log('parsed');
+        const { value } = location;
+        if (orgFolder) {
+            const fileName = `./${orgFolder}/${value}.json`;
+            fs.writeFileSync(fileName, JSON.stringify(location), 'utf8');
+            console.log(`finished ${fileName}`);
+        }
+    });
+});
+
+fs.writeFileSync('./data/selectors/geo-organizations.json', JSON.stringify(geoOrganizations), 'utf8');

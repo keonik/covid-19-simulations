@@ -1,2 +1,4 @@
 public/files
 node_modules
+report.*
+.DS_Store
