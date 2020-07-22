@@ -11,7 +11,8 @@
     },
     "devDependencies": {},
     "scripts": {
-        "build": "babel-node --max-old-space-size=16384 scripts/parse-IHME.js"
+        "build": "npm run parse",
+        "parse": "babel-node --max-old-space-size=16384 scripts/parse.js"
     },
     "repository": {
         "type": "git",

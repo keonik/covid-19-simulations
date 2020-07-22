@@ -1,0 +1,5 @@
+name: Generate-Simulations
+description: Github action to generate all simulations based on most up to date file available
+runs:
+    using: node12 # Runtime Environment
+    main: scripts/parse.js # Script to run, path is relative
