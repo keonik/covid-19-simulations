@@ -1,19 +1,19 @@
-# language: node_js
-# node_js: stable
+language: node_js
+node_js: stable
 
-# cache:
-#     directories:
-#         - ./node_modules
+cache:
+    directories:
+        - ./node_modules
 
-# before_deploy:
-#     - sudo apt-get install zip unzip
-#     - 'npm run fetch-latest'
-#     - 'npm run parse'
+before_deploy:
+    # - sudo apt-get install zip unzip
+    # - 'npm run fetch-latest'
+    # - 'npm run parse'
 
-# deploy:
-#     provider: pages
-#     skip_cleanup: true
-#     github_token: $GITHUB_TOKEN
-#     # local_dir: docs
-#     on:
-#         branch: master
+deploy:
+    provider: pages
+    skip_cleanup: true
+    github_token: $GITHUB_TOKEN
+    # local_dir: docs
+    on:
+        branch: master
