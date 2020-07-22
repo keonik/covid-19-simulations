@@ -4,6 +4,17 @@ Script to converts csv's provided by AFRL Explainable Artificial Intelligence La
 
 [Homepage](https://keonik.github.io/covid-19-simulations/)
 
+## Sources
+
+Simulation Sources
+
+-   EXAIL - AFRL Explainable AI Lab data
+-   [IHME](http://www.healthdata.org/covid/data-downloads)
+-   [Center for Army Analysis (CAA)](https://covid19.torchinsight.com)
+-   [Los Alamos National Laboratory(LANL)](https://covid-19.bsvgateway.org/#link%20to%20forecasting%20site)
+-   [University of Texas (UT)](https://github.com/UT-Covid/USmortality)
+-   [Youyang Gu (YYG)](https://github.com/youyanggu/covid19_projections/tree/master/)
+
 ## Example usage
 
 1. Visit [USDA](https://www.nrcs.usda.gov/wps/portal/nrcs/detail/national/home/?cid=nrcs143_013697) and obtain a FIPS Code
@@ -16,16 +27,7 @@ Script to converts csv's provided by AFRL Explainable Artificial Intelligence La
 
 -   [Example](https://keonik.github.io/covid-19-simulations/data/states/2000.json)
 
-## Sources
-
-Simulation Sources
-
--   EXAIL - AFRL Explainable AI Lab data
--   [IHME](http://www.healthdata.org/covid/data-downloads)
--   [Center for Army Analysis (CAA)](https://covid19.torchinsight.com)
--   [Los Alamos National Laboratory(LANL)](https://covid-19.bsvgateway.org/#link%20to%20forecasting%20site)
--   [University of Texas (UT)](https://github.com/UT-Covid/USmortality)
--   [Youyang Gu (YYG)](https://github.com/youyanggu/covid19_projections/tree/master/)
+##
 
 ## Folder structure
 
