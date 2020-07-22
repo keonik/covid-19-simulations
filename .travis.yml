@@ -6,6 +6,8 @@ cache:
         - ./node_modules
 
 before_deploy:
+    - sudo apt-get install zip unzip
+    - 'npm run fetch-latest'
     - 'npm run parse'
 
 deploy:
