@@ -7,12 +7,14 @@ const caaFile = fs.readFileSync('./files/SimCommandCAA-latest.csv', 'utf-8');
 const lanlFile = fs.readFileSync('./files/SimCommandLANL-latest.csv', 'utf-8');
 const utFile = fs.readFileSync('./files/SimCommandUT-latest.csv', 'utf-8');
 const yygFile = fs.readFileSync('./files/SimCommandYYG-latest.csv', 'utf-8');
+const exailFile = fs.readFileSync('./files/SimCommandXAIL-latest.csv', 'utf-8');
 
 const ihmeSimData = d3.csvParse(ihmeFile);
 const caaSimData = d3.csvParse(caaFile);
 const lanlSimData = d3.csvParse(lanlFile);
 const utSimData = d3.csvParse(utFile);
 const yygSimData = d3.csvParse(yygFile);
+const exailSimData = d3.csvParse(exailFile);
 
 const geoOrganizations = [
     { value: 'G', label: 'Country', disabled: false, locations: [], folder: 'data/countries' },
@@ -187,6 +189,54 @@ yygSimData.forEach((row, index) => {
 
     const locationIndex = locations.findIndex(({ value }) => value === +FIPS);
     locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points });
+});
+
+predictionsTSDays = getPredictionColumns(exailSimData);
+
+exailSimData.forEach((row, index) => {
+    const { Sim_ID, FIPS, Run_Type } = row;
+
+    const standardDeviationRunType = Run_Type.includes('STD');
+
+    if (!standardDeviationRunType) {
+        // Mean Run type
+        const parentLocation = geoLocations.find(({ value }) => +row[value] === 1);
+        const { locations } = parentLocation;
+
+        // xy points
+        const points = formatPoints(predictionsTSDays, index);
+
+        const locationIndex = locations.findIndex(({ value }) => value === +FIPS);
+
+        // the standard deviation run type always follows after the Mean run type so we can calculate upper/lower at the same time
+        const standardDeviationRow = exailSimData[index + 1];
+
+        const stdPoints = formatPoints(predictionsTSDays, index + 1);
+
+        const upperPoints = points.map(({ x, y }, index) => {
+            if (!x) {
+                return { x, y };
+            }
+            return { x: x + stdPoints[index]?.x, y };
+        });
+
+        const lowerPoints = points.map(({ x, y }, index) => {
+            if (!x) {
+                return { x, y };
+            }
+            const xVal = x - stdPoints[index]?.x;
+            if (xVal < 0) {
+                return { x: 0, y };
+            }
+            return { x: xVal, y };
+        });
+
+        locations[locationIndex].predictions.push(
+            { id: +Sim_ID, runType: Run_Type, values: points },
+            { id: +Sim_ID, runType: Run_Type.replace('Mean', 'Upper'), values: upperPoints },
+            { id: +Sim_ID, runType: Run_Type.replace('Mean', 'Lower'), values: lowerPoints }
+        );
+    }
 });
 
 geoLocations.forEach((parentLocation) => {
