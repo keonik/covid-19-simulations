@@ -142,11 +142,11 @@ ihmeSimData.forEach((row, index) => {
             label: Location,
             indicator: Type_Indicator,
             startDate: predictionsTSDays[0].replace('Prediction_TS_Day_', ''),
-            predictions: [{ id: +Sim_ID, runType: Run_Type, values: points }],
+            predictions: [{ id: +Sim_ID, runType: Run_Type, values: points, source: 'IHME' }],
         });
     } else {
         const locationIndex = locations.findIndex(({ value }) => value === +FIPS);
-        locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points });
+        locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points, source: 'IHME' });
     }
 });
 
@@ -162,7 +162,7 @@ caaSimData.forEach((row, index) => {
     const points = formatPoints(predictionsTSDays, index);
 
     const locationIndex = locations.findIndex(({ value }) => value === +FIPS);
-    locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points });
+    locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points, source: 'CAA' });
 });
 
 predictionsTSDays = getPredictionColumns(lanlSimData);
@@ -177,7 +177,7 @@ lanlSimData.forEach((row, index) => {
     const points = formatPoints(predictionsTSDays, index);
 
     const locationIndex = locations.findIndex(({ value }) => value === +FIPS);
-    locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points });
+    locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points, source: 'LANL' });
 });
 
 predictionsTSDays = getPredictionColumns(utSimData);
@@ -192,7 +192,7 @@ utSimData.forEach((row, index) => {
     const points = formatPoints(predictionsTSDays, index);
 
     const locationIndex = locations.findIndex(({ value }) => value === +FIPS);
-    locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points });
+    locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points, source: 'UT' });
 });
 
 predictionsTSDays = getPredictionColumns(yygSimData);
@@ -207,7 +207,7 @@ yygSimData.forEach((row, index) => {
     const points = formatPoints(predictionsTSDays, index);
 
     const locationIndex = locations.findIndex(({ value }) => value === +FIPS);
-    locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points });
+    locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points, source: 'YYG' });
 });
 
 predictionsTSDays = getPredictionColumns(exailSimData);
@@ -228,8 +228,6 @@ exailSimData.forEach((row, index) => {
         const locationIndex = locations.findIndex(({ value }) => value === +FIPS);
 
         // the standard deviation run type always follows after the Mean run type so we can calculate upper/lower at the same time
-        const standardDeviationRow = exailSimData[index + 1];
-
         const stdPoints = formatPoints(predictionsTSDays, index + 1);
 
         const upperPoints = points.map(({ x, y }, index) => {
@@ -251,7 +249,7 @@ exailSimData.forEach((row, index) => {
         });
 
         locations[locationIndex].predictions.push(
-            { id: +Sim_ID, runType: Run_Type, values: points },
+            { id: +Sim_ID, runType: Run_Type, values: points, source: 'EXAIL' },
             { id: +Sim_ID, runType: Run_Type.replace('Mean', 'Upper'), values: upperPoints },
             { id: +Sim_ID, runType: Run_Type.replace('Mean', 'Lower'), values: lowerPoints }
         );
