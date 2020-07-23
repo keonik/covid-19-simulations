@@ -17,15 +17,15 @@ const yygSimData = d3.csvParse(yygFile);
 const exailSimData = d3.csvParse(exailFile);
 
 const geoOrganizations = [
-    { value: 'G', label: 'Country', disabled: false, locations: [], folder: 'data/countries' },
-    { value: 'S', label: 'States', disabled: false, locations: [], folder: 'data/states' },
-    { value: 'B', label: 'US Bases', disabled: true, locations: [], folder: 'data/bases' },
-    { value: 'C', label: 'US Counties', disabled: false, locations: [], folder: 'data/counties' },
+    { value: 'G', label: 'Countries', disabled: false, locations: [], folder: 'data/countries' },
+    { value: 'S', label: 'US States', disabled: false, locations: [], folder: 'data/states' },
+    { value: 'B', label: 'US Bases and Commands', disabled: false, locations: [], folder: 'data/bases' },
+    { value: 'C', label: 'US Counties by State', disabled: false, locations: [], folder: 'data/counties' },
 ];
 
 const geoLocations = [];
 
-function pushToGeoOrganization(Type_Indicator, Location, FIPS) {
+function pushToGeoOrganization(Type_Indicator, Location, FIPS, parent) {
     switch (Type_Indicator) {
         case 'G': {
             geoOrganizations[0].locations.push({ value: FIPS, label: Location });
@@ -36,11 +36,28 @@ function pushToGeoOrganization(Type_Indicator, Location, FIPS) {
             break;
         }
         case 'B': {
-            geoOrganizations[2].locations.push({ value: FIPS, label: Location });
+            const index = geoOrganizations[2].locations.findIndex(({ label }) => label === parent);
+            if (index !== -1) {
+                geoOrganizations[2].locations[index].options.push({ value: FIPS, label: Location });
+            } else {
+                geoOrganizations[2].locations.push({
+                    label: parent,
+                    options: [{ value: FIPS, label: Location }],
+                });
+            }
             break;
         }
         case 'C': {
-            geoOrganizations[3].locations.push({ value: FIPS, label: Location });
+            const index = geoOrganizations[3].locations.findIndex(({ label }) => label === parent);
+            if (index !== -1) {
+                geoOrganizations[3].locations[index].options.push({ value: FIPS, label: Location });
+            } else {
+                geoOrganizations[3].locations.push({
+                    label: parent,
+                    options: [{ value: FIPS, label: Location }],
+                });
+            }
+
             break;
         }
         default:
@@ -116,7 +133,7 @@ ihmeSimData.forEach((row, index) => {
     // Location hasn't been added yet
     if (!locationExists) {
         // add Location to appropriate org based on Type_Indicator
-        pushToGeoOrganization(Type_Indicator, Location, FIPS);
+        pushToGeoOrganization(Type_Indicator, Location, FIPS, parentLocation.value);
 
         locations.push({
             value: +FIPS,
@@ -239,17 +256,29 @@ exailSimData.forEach((row, index) => {
     }
 });
 
-geoLocations.forEach((parentLocation) => {
-    parentLocation.locations.forEach((location) => {
-        const orgFolder = geoOrganizations.find(({ value }) => value === location.indicator)?.folder;
+// geoLocations.forEach((parentLocation) => {
+//     parentLocation.locations.forEach((location) => {
+//         const orgFolder = geoOrganizations.find(({ value }) => value === location.indicator)?.folder;
 
-        const { value } = location;
-        if (orgFolder) {
-            const fileName = `./${orgFolder}/${value}.json`;
-            fs.writeFileSync(fileName, JSON.stringify(location), 'utf8');
-            console.log(`finished ${fileName}`);
-        }
-    });
-});
+//         const { value } = location;
+//         if (orgFolder) {
+//             const fileName = `./${orgFolder}/${value}.json`;
+//             fs.writeFileSync(fileName, JSON.stringify(location), 'utf8');
+//             console.log(`finished ${fileName}`);
+//         }
+//     });
+// });
 
+// const outputDropdownStructure = [];
+// geoOrganizations.forEach((tier1, index) => {
+//     if (index === 0) {
+//         console.log(tier1);
+//     }
+//     tier1.locations.forEach((tier2, ind) => {
+//         if (ind === 0) {
+//             console.log(tier2);
+//         }
+//     });
+// });
 fs.writeFileSync('./data/selectors/geo-organizations.json', JSON.stringify(geoOrganizations), 'utf8');
+console.log(`finished writing geo organizations`);
