@@ -258,18 +258,18 @@ exailSimData.forEach((row, index) => {
     }
 });
 
-// geoLocations.forEach((parentLocation) => {
-//     parentLocation.locations.forEach((location) => {
-//         const orgFolder = geoOrganizations.find(({ value }) => value === location.indicator)?.folder;
+geoLocations.forEach((parentLocation) => {
+    parentLocation.locations.forEach((location) => {
+        const orgFolder = geoOrganizations.find(({ value }) => value === location.indicator)?.folder;
 
-//         const { value } = location;
-//         if (orgFolder) {
-//             const fileName = `./${orgFolder}/${value}.json`;
-//             fs.writeFileSync(fileName, JSON.stringify(location), 'utf8');
-//             console.log(`finished ${fileName}`);
-//         }
-//     });
-// });
+        const { value } = location;
+        if (orgFolder) {
+            const fileName = `./${orgFolder}/${value}.json`;
+            fs.writeFileSync(fileName, JSON.stringify(location), 'utf8');
+            console.log(`finished ${fileName}`);
+        }
+    });
+});
 
 // const outputDropdownStructure = [];
 // geoOrganizations.forEach((tier1, index) => {
