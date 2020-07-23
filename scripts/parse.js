@@ -48,12 +48,14 @@ function pushToGeoOrganization(Type_Indicator, Location, FIPS, parent) {
             break;
         }
         case 'C': {
-            const index = geoOrganizations[3].locations.findIndex(({ label }) => label === parent);
+            const index = geoOrganizations[3].locations.findIndex(
+                ({ label }) => label === parent.replace('County_', '')
+            );
             if (index !== -1) {
                 geoOrganizations[3].locations[index].options.push({ value: FIPS, label: Location });
             } else {
                 geoOrganizations[3].locations.push({
-                    label: parent,
+                    label: parent.replace('County_', ''),
                     options: [{ value: FIPS, label: Location }],
                 });
             }
