@@ -74,18 +74,18 @@ function formatPoints(PredictionTSDays, row) {
         const y = colName.replace('Prediction_TS_Day_', '');
         const value = parseFloat(row[colName]);
 
-        // if (value) {
-        if (value > 0) {
-            points.push({ x: +parseInt(value), y });
+        if (value) {
+            if (value > 0) {
+                points.push({ x: +parseInt(value), y });
+            }
+            // set minimum 0 (show no negatives)
+            else {
+                points.push({ x: 0, y });
+            }
+        } else {
+            // push null to avoid rendering unneeded data in plots/charts
+            points.push({ x: null, y });
         }
-        // set minimum 0 (show no negatives)
-        else {
-            points.push({ x: 0, y });
-        }
-        // } else {
-        //     // push null to avoid rendering unneeded data in plots/charts
-        //     points.push({ x: null, y });
-        // }
     });
 
     return points;
@@ -230,7 +230,6 @@ exailSimData.forEach((row, index) => {
         // the standard deviation run type always follows after the Mean run type so we can calculate upper/lower at the same time
         const stdPoints = formatPoints(predictionsTSDays, exailSimData[index + 1]);
 
-        if (index === 0) console.log(stdPoints);
         const upperPoints = points.map(({ x, y }, index) => {
             if (!x) {
                 return { x, y };
