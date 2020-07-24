@@ -67,25 +67,25 @@ function pushToGeoOrganization(Type_Indicator, Location, FIPS, parent) {
     }
 }
 
-function formatPoints(PredictionTSDays, index) {
+function formatPoints(PredictionTSDays, row) {
     const points = [];
     // all prediction values into array [{x: null, y :Date}, {x: 0, y: Date}]
-    PredictionTSDays.forEach((rowName) => {
-        const y = rowName.replace('Prediction_TS_Day_', '');
-        const value = parseFloat(ihmeSimData[index][rowName]);
+    PredictionTSDays.forEach((colName) => {
+        const y = colName.replace('Prediction_TS_Day_', '');
+        const value = parseFloat(row[colName]);
 
-        if (value) {
-            if (value > 0) {
-                points.push({ x: +parseInt(value), y });
-            }
-            // set minimum 0 (show no negatives)
-            else {
-                points.push({ x: 0, y });
-            }
-        } else {
-            // push null to avoid rendering unneeded data in plots/charts
-            points.push({ x: null, y });
+        // if (value) {
+        if (value > 0) {
+            points.push({ x: +parseInt(value), y });
         }
+        // set minimum 0 (show no negatives)
+        else {
+            points.push({ x: 0, y });
+        }
+        // } else {
+        //     // push null to avoid rendering unneeded data in plots/charts
+        //     points.push({ x: null, y });
+        // }
     });
 
     return points;
@@ -130,7 +130,7 @@ ihmeSimData.forEach((row, index) => {
     const locationExists = locations.find(({ value }) => value === +FIPS);
 
     // xy points
-    const points = formatPoints(predictionsTSDays, index);
+    const points = formatPoints(predictionsTSDays, row);
 
     // Location hasn't been added yet
     if (!locationExists) {
@@ -159,7 +159,7 @@ caaSimData.forEach((row, index) => {
     const { locations } = parentLocation;
 
     // xy points
-    const points = formatPoints(predictionsTSDays, index);
+    const points = formatPoints(predictionsTSDays, row);
 
     const locationIndex = locations.findIndex(({ value }) => value === +FIPS);
     locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points, source: 'CAA' });
@@ -174,7 +174,7 @@ lanlSimData.forEach((row, index) => {
     const { locations } = parentLocation;
 
     // xy points
-    const points = formatPoints(predictionsTSDays, index);
+    const points = formatPoints(predictionsTSDays, row);
 
     const locationIndex = locations.findIndex(({ value }) => value === +FIPS);
     locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points, source: 'LANL' });
@@ -189,7 +189,7 @@ utSimData.forEach((row, index) => {
     const { locations } = parentLocation;
 
     // xy points
-    const points = formatPoints(predictionsTSDays, index);
+    const points = formatPoints(predictionsTSDays, row);
 
     const locationIndex = locations.findIndex(({ value }) => value === +FIPS);
     locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points, source: 'UT' });
@@ -204,7 +204,7 @@ yygSimData.forEach((row, index) => {
     const { locations } = parentLocation;
 
     // xy points
-    const points = formatPoints(predictionsTSDays, index);
+    const points = formatPoints(predictionsTSDays, row);
 
     const locationIndex = locations.findIndex(({ value }) => value === +FIPS);
     locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points, source: 'YYG' });
@@ -223,13 +223,14 @@ exailSimData.forEach((row, index) => {
         const { locations } = parentLocation;
 
         // xy points
-        const points = formatPoints(predictionsTSDays, index);
+        const points = formatPoints(predictionsTSDays, row);
 
         const locationIndex = locations.findIndex(({ value }) => value === +FIPS);
 
         // the standard deviation run type always follows after the Mean run type so we can calculate upper/lower at the same time
-        const stdPoints = formatPoints(predictionsTSDays, index + 1);
+        const stdPoints = formatPoints(predictionsTSDays, exailSimData[index + 1]);
 
+        if (index === 0) console.log(stdPoints);
         const upperPoints = points.map(({ x, y }, index) => {
             if (!x) {
                 return { x, y };
