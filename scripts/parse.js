@@ -119,6 +119,8 @@ function getPredictionColumns(simData) {
     return predictionsTSDays;
 }
 
+console.time('ihme');
+
 let predictionsTSDays = getPredictionColumns(ihmeSimData);
 
 ihmeSimData.forEach((row, index) => {
@@ -149,6 +151,9 @@ ihmeSimData.forEach((row, index) => {
         locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points, source: 'IHME' });
     }
 });
+console.timeEnd('ihme');
+
+console.time('caa');
 
 predictionsTSDays = getPredictionColumns(caaSimData);
 
@@ -165,6 +170,9 @@ caaSimData.forEach((row, index) => {
     locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points, source: 'CAA' });
 });
 
+console.timeEnd('caa');
+
+console.time('lanl');
 predictionsTSDays = getPredictionColumns(lanlSimData);
 
 lanlSimData.forEach((row, index) => {
@@ -179,6 +187,10 @@ lanlSimData.forEach((row, index) => {
     const locationIndex = locations.findIndex(({ value }) => value === +FIPS);
     locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points, source: 'LANL' });
 });
+
+console.timeEnd('lanl');
+
+console.time('ut');
 
 predictionsTSDays = getPredictionColumns(utSimData);
 
@@ -195,6 +207,10 @@ utSimData.forEach((row, index) => {
     locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points, source: 'UT' });
 });
 
+console.timeEnd('ut');
+
+console.time('yyg');
+
 predictionsTSDays = getPredictionColumns(yygSimData);
 
 yygSimData.forEach((row, index) => {
@@ -210,10 +226,14 @@ yygSimData.forEach((row, index) => {
     locations[locationIndex].predictions.push({ id: +Sim_ID, runType: Run_Type, values: points, source: 'YYG' });
 });
 
+console.timeEnd('yyg');
+
+console.time('xail');
+
 predictionsTSDays = getPredictionColumns(exailSimData);
 
 exailSimData.forEach((row, index) => {
-    const { Sim_ID, FIPS, Run_Type } = row;
+    const { Sim_ID, Location, FIPS, Type_Indicator, Run_Type } = row;
 
     const standardDeviationRunType = Run_Type.includes('STD');
 
@@ -247,14 +267,28 @@ exailSimData.forEach((row, index) => {
             }
             return { x: xVal, y };
         });
+        if (locationIndex < 0) {
+            // add Location to appropriate org based on Type_Indicator
+            pushToGeoOrganization(Type_Indicator, Location, FIPS, parentLocation.value);
 
-        locations[locationIndex].predictions.push(
-            { id: +Sim_ID, runType: Run_Type, values: points, source: 'EXAIL' },
-            { id: +Sim_ID, runType: Run_Type.replace('Mean', 'Upper'), values: upperPoints },
-            { id: +Sim_ID, runType: Run_Type.replace('Mean', 'Lower'), values: lowerPoints }
-        );
+            locations.push({
+                value: +FIPS,
+                label: Location,
+                indicator: Type_Indicator,
+                startDate: predictionsTSDays[0].replace('Prediction_TS_Day_', ''),
+                predictions: [{ id: +Sim_ID, runType: Run_Type, values: points, source: 'IHME' }],
+            });
+        } else {
+            locations[locationIndex].predictions.push(
+                { id: +Sim_ID, runType: Run_Type, values: points, source: 'EXAIL' },
+                { id: +Sim_ID, runType: Run_Type.replace('Mean', 'Upper'), values: upperPoints },
+                { id: +Sim_ID, runType: Run_Type.replace('Mean', 'Lower'), values: lowerPoints }
+            );
+        }
     }
 });
+
+console.timeEnd('xail');
 
 geoLocations.forEach((parentLocation) => {
     parentLocation.locations.forEach((location) => {
@@ -264,7 +298,7 @@ geoLocations.forEach((parentLocation) => {
         if (orgFolder) {
             const fileName = `./${orgFolder}/${value}.json`;
             fs.writeFileSync(fileName, JSON.stringify(location), 'utf8');
-            console.log(`finished ${fileName}`);
+            // console.log(`finished ${fileName}`);
         }
     });
 });
