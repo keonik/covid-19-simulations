@@ -13,9 +13,10 @@
         "prettier": "^2.0.5"
     },
     "scripts": {
-        "build": "npm run parse",
+        "build": "npm run clean && npm run parse",
         "fetch-latest": "wget https://s3.us-gov-west-1.amazonaws.com/ultraviz/7-20.zip && unzip 7-20.zip -d files && rm -rf 7-20.zip",
-        "parse": "babel-node --max-old-space-size=16384 scripts/parse.js"
+        "parse": "babel-node --max-old-space-size=16384 scripts/parse.js",
+        "clean": "rm -rf data"
     },
     "repository": {
         "type": "git",

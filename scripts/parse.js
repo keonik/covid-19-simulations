@@ -290,6 +290,13 @@ exailSimData.forEach((row, index) => {
 
 console.timeEnd('xail');
 
+fs.mkdirSync('./data');
+geoOrganizations.forEach(({ folder }) => {
+    console.log(`creating ${folder} directory`);
+    fs.mkdirSync(`./${folder}`);
+});
+fs.mkdirSync('./data/selectors');
+
 geoLocations.forEach((parentLocation) => {
     parentLocation.locations.forEach((location) => {
         const orgFolder = geoOrganizations.find(({ value }) => value === location.indicator)?.folder;
