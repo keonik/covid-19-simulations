@@ -268,10 +268,12 @@ exailSimData.forEach((row, index) => {
             }
             return { x: xVal, y };
         });
+
+        const source = 'EXAIL';
+
         if (locationIndex < 0) {
             // add Location to appropriate org based on Type_Indicator
             pushToGeoOrganization(Type_Indicator, Location, FIPS, parentLocation.value);
-
             locations.push({
                 value: +FIPS,
                 label: Location,
@@ -279,15 +281,15 @@ exailSimData.forEach((row, index) => {
                 startDate: predictionsTSDays[0].replace('Prediction_TS_Day_', ''),
                 predictions: [
                     { id: +Sim_ID, runType: Run_Type, values: points, source: 'EXAIL' },
-                    { id: +Sim_ID + 1, runType: Run_Type.replace('Mean', 'Upper'), values: upperPoints },
-                    { id: +Sim_ID + 2, runType: Run_Type.replace('Mean', 'Lower'), values: lowerPoints },
+                    { id: +Sim_ID + 1, runType: Run_Type.replace('Mean', 'Upper'), values: upperPoints, source },
+                    { id: +Sim_ID + 2, runType: Run_Type.replace('Mean', 'Lower'), values: lowerPoints, source },
                 ],
             });
         } else {
             locations[locationIndex].predictions.push(
-                { id: +Sim_ID, runType: Run_Type, values: points, source: 'EXAIL' },
-                { id: +Sim_ID + 1, runType: Run_Type.replace('Mean', 'Upper'), values: upperPoints },
-                { id: +Sim_ID + 2, runType: Run_Type.replace('Mean', 'Lower'), values: lowerPoints }
+                { id: +Sim_ID, runType: Run_Type, values: points, source },
+                { id: +Sim_ID + 1, runType: Run_Type.replace('Mean', 'Upper'), values: upperPoints, source },
+                { id: +Sim_ID + 2, runType: Run_Type.replace('Mean', 'Lower'), values: lowerPoints, source }
             );
         }
     }
