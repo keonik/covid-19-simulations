@@ -1,20 +1,21 @@
-import fs, { mkdirSync, rmdirSync } from 'fs';
-import * as d3 from 'd3-dsv';
+import { csvParse } from 'd3-dsv';
+import { readFileSync, writeFileSync } from 'fs';
+import mkdirp from 'mkdirp';
 
 // relies on files under files directory
-const ihmeFile = fs.readFileSync('./files/SimCommandIHME-latest.csv', 'utf-8');
-const caaFile = fs.readFileSync('./files/SimCommandCAA-latest.csv', 'utf-8');
-const lanlFile = fs.readFileSync('./files/SimCommandLANL-latest.csv', 'utf-8');
-const utFile = fs.readFileSync('./files/SimCommandUT-latest.csv', 'utf-8');
-const yygFile = fs.readFileSync('./files/SimCommandYYG-latest.csv', 'utf-8');
-const exailFile = fs.readFileSync('./files/SimCommandXAIL-latest.csv', 'utf-8');
+const ihmeFile = readFileSync('./files/SimCommandIHME-latest.csv', 'utf-8');
+const caaFile = readFileSync('./files/SimCommandCAA-latest.csv', 'utf-8');
+const lanlFile = readFileSync('./files/SimCommandLANL-latest.csv', 'utf-8');
+const utFile = readFileSync('./files/SimCommandUT-latest.csv', 'utf-8');
+const yygFile = readFileSync('./files/SimCommandYYG-latest.csv', 'utf-8');
+const exailFile = readFileSync('./files/SimCommandXAIL-latest.csv', 'utf-8');
 
-const ihmeSimData = d3.csvParse(ihmeFile);
-const caaSimData = d3.csvParse(caaFile);
-const lanlSimData = d3.csvParse(lanlFile);
-const utSimData = d3.csvParse(utFile);
-const yygSimData = d3.csvParse(yygFile);
-const exailSimData = d3.csvParse(exailFile);
+const ihmeSimData = csvParse(ihmeFile);
+const caaSimData = csvParse(caaFile);
+const lanlSimData = csvParse(lanlFile);
+const utSimData = csvParse(utFile);
+const yygSimData = csvParse(yygFile);
+const exailSimData = csvParse(exailFile);
 
 const geoOrganizations = [
     { value: 'G', label: 'Countries', disabled: false, locations: [], folder: 'data/countries' },
@@ -245,7 +246,7 @@ exailSimData.forEach((row, index) => {
         // xy points
         const points = formatPoints(predictionsTSDays, row);
 
-        const locationIndex = locations.findIndex(({ value }) => value === +FIPS);
+        const locationIndex = locations.findIndex(({ value }) => value == +FIPS);
 
         // the standard deviation run type always follows after the Mean run type so we can calculate upper/lower at the same time
         const stdPoints = formatPoints(predictionsTSDays, exailSimData[index + 1]);
@@ -276,13 +277,17 @@ exailSimData.forEach((row, index) => {
                 label: Location,
                 indicator: Type_Indicator,
                 startDate: predictionsTSDays[0].replace('Prediction_TS_Day_', ''),
-                predictions: [{ id: +Sim_ID, runType: Run_Type, values: points, source: 'IHME' }],
+                predictions: [
+                    { id: +Sim_ID, runType: Run_Type, values: points, source: 'EXAIL' },
+                    { id: +Sim_ID + 1, runType: Run_Type.replace('Mean', 'Upper'), values: upperPoints },
+                    { id: +Sim_ID + 2, runType: Run_Type.replace('Mean', 'Lower'), values: lowerPoints },
+                ],
             });
         } else {
             locations[locationIndex].predictions.push(
                 { id: +Sim_ID, runType: Run_Type, values: points, source: 'EXAIL' },
-                { id: +Sim_ID, runType: Run_Type.replace('Mean', 'Upper'), values: upperPoints },
-                { id: +Sim_ID, runType: Run_Type.replace('Mean', 'Lower'), values: lowerPoints }
+                { id: +Sim_ID + 1, runType: Run_Type.replace('Mean', 'Upper'), values: upperPoints },
+                { id: +Sim_ID + 2, runType: Run_Type.replace('Mean', 'Lower'), values: lowerPoints }
             );
         }
     }
@@ -290,12 +295,11 @@ exailSimData.forEach((row, index) => {
 
 console.timeEnd('xail');
 
-fs.mkdirSync('./data');
 geoOrganizations.forEach(({ folder }) => {
     console.log(`creating ${folder} directory`);
-    fs.mkdirSync(`./${folder}`);
+    mkdirp(`./${folder}`);
 });
-fs.mkdirSync('./data/selectors');
+mkdirp('./data/selectors');
 
 geoLocations.forEach((parentLocation) => {
     parentLocation.locations.forEach((location) => {
@@ -304,7 +308,7 @@ geoLocations.forEach((parentLocation) => {
         const { value } = location;
         if (orgFolder) {
             const fileName = `./${orgFolder}/${value}.json`;
-            fs.writeFileSync(fileName, JSON.stringify(location), 'utf8');
+            writeFileSync(fileName, JSON.stringify(location), 'utf8');
             // console.log(`finished ${fileName}`);
         }
     });
@@ -321,5 +325,5 @@ geoLocations.forEach((parentLocation) => {
 //         }
 //     });
 // });
-fs.writeFileSync('./data/selectors/geo-organizations.json', JSON.stringify(geoOrganizations), 'utf8');
+writeFileSync('./data/selectors/geo-organizations.json', JSON.stringify(geoOrganizations), 'utf8');
 console.log(`finished writing geo organizations`);
