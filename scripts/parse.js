@@ -1,5 +1,5 @@
 import { csvParse } from 'd3-dsv';
-import { readFileSync, writeFileSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 
 // relies on files under files directory
 const ihmeFile = readFileSync('./files/SimCommandIHME-latest.csv', 'utf-8');
@@ -296,12 +296,14 @@ exailSimData.forEach((row, index) => {
 
 console.timeEnd('xail');
 
-mkdirSync('./data');
-geoOrganizations.forEach(({ folder }) => {
-    console.log(`creating ${folder} directory`);
-    mkdirSync(`./${folder}`);
-});
-mkdirSync('./data/selectors');
+if (!existsSync('./data')) {
+    mkdirSync('./data');
+    geoOrganizations.forEach(({ folder }) => {
+        console.log(`creating ${folder} directory`);
+        mkdirSync(`./${folder}`);
+    });
+    mkdirSync('./data/selectors');
+}
 
 geoLocations.forEach((parentLocation) => {
     parentLocation.locations.forEach((location) => {
