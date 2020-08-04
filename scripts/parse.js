@@ -24,7 +24,9 @@ const geoOrganizations = [
         value: 'B',
         label: 'US Bases and Commands',
         disabled: false,
-        locations: [{ label: 'Air Force', options: MAJOR_COMMANDS.map((mc) => ({ label: mc, options: [] })) }],
+        locations: [
+            // { label: 'Air Force', options: MAJOR_COMMANDS.map((mc) => ({ label: mc, options: [] })) }
+        ],
         folder: 'data/bases',
     },
     { value: 'C', label: 'US Counties by State', disabled: false, locations: [], folder: 'data/counties' },
@@ -43,25 +45,27 @@ function pushToGeoOrganization(Type_Indicator, Location, FIPS, parent) {
             break;
         }
         case 'B': {
-            const isAirForce = !!MAJOR_COMMANDS.includes(parent);
-            const index = isAirForce
-                ? geoOrganizations[2].locations.findIndex(({ label }) => label === 'Air Force')
-                : geoOrganizations[2].locations.findIndex(({ label }) => label === parent);
+            // const isAirForce = !!MAJOR_COMMANDS.includes(parent);
+            const index =
+                // isAirForce
+                //     ? geoOrganizations[2].locations.findIndex(({ label }) => label === 'Air Force')
+                //     :
+                geoOrganizations[2].locations.findIndex(({ label }) => label === parent);
             if (index !== -1) {
-                if (isAirForce) {
-                    const majComIndex = geoOrganizations[2].locations[index].options.findIndex(
-                        ({ label }) => label === parent
-                    );
-                    console.log({ majComIndex });
-                    if (majComIndex > -1) {
-                        geoOrganizations[2].locations[index].options[majComIndex].options.push({
-                            value: FIPS,
-                            label: Location,
-                        });
-                    }
-                } else {
-                    geoOrganizations[2].locations[index].options.push({ value: FIPS, label: Location });
-                }
+                // if (isAirForce) {
+                //     const majComIndex = geoOrganizations[2].locations[index].options.findIndex(
+                //         ({ label }) => label === parent
+                //     );
+
+                //     if (majComIndex > -1) {
+                //         geoOrganizations[2].locations[index].options[majComIndex].options.push({
+                //             value: FIPS,
+                //             label: Location,
+                //         });
+                //     }
+                // } else {
+                geoOrganizations[2].locations[index].options.push({ value: FIPS, label: Location });
+                // }
             } else {
                 geoOrganizations[2].locations.push({
                     label: parent,
