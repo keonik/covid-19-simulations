@@ -7,7 +7,8 @@
         "@babel/core": "^7.10.5",
         "@babel/node": "^7.10.5",
         "@babel/preset-env": "^7.10.4",
-        "d3-dsv": "^1.2.0"
+        "d3-dsv": "^1.2.0",
+        "lodash": "^4.17.19"
     },
     "devDependencies": {
         "prettier": "^2.0.5"

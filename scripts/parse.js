@@ -1,6 +1,6 @@
 import { csvParse } from 'd3-dsv';
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
-
+import { sortBy } from 'lodash';
 // relies on files under files directory
 const ihmeFile = readFileSync('./files/SimCommandIHME-latest.csv', 'utf-8');
 const caaFile = readFileSync('./files/SimCommandCAA-latest.csv', 'utf-8');
@@ -16,9 +16,9 @@ const utSimData = csvParse(utFile);
 const yygSimData = csvParse(yygFile);
 const exailSimData = csvParse(exailFile);
 
-const MAJOR_COMMANDS = ['ACC', 'AETC', 'AFGSC', 'AFMC', 'AFRC', 'AFSOC', 'AFSPC', 'AMC', 'ANG', 'Joint Bases', 'PACAF'];
-const geoOrganizations = [
-    { value: 'G', label: 'Countries', disabled: false, locations: [], folder: 'data/countries' },
+const MAJOR_COMMANDS = ['ACC', 'AETC', 'AFGSC', 'AFMC', 'AFRC', 'AFSOC', 'AFSPC', 'AMC', 'PACAF'];
+let geoOrganizations = [
+    { value: 'G', label: 'Nations', disabled: false, locations: [], folder: 'data/countries' },
     { value: 'S', label: 'US States', disabled: false, locations: [], folder: 'data/states' },
     {
         value: 'B',
@@ -343,6 +343,17 @@ geoLocations.forEach((parentLocation) => {
             // console.log(`finished ${fileName}`);
         }
     });
+});
+
+geoOrganizations = geoOrganizations.map((geoOrg) => {
+    const locations = sortBy(geoOrg.locations, ['label']);
+    if (!locations[0].options) return { ...geoOrg, locations };
+    return {
+        ...geoOrg,
+        locations: locations.map((loc) => {
+            return { ...loc, options: sortBy(loc.options, ['label']) };
+        }),
+    };
 });
 
 // const outputDropdownStructure = [];
