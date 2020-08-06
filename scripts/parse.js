@@ -150,7 +150,7 @@ let predictionsTSDays = getPredictionColumns(ihmeSimData);
 ihmeSimData.forEach((row, index) => {
     const { Sim_ID, Location, FIPS, Type_Indicator, Run_Type } = row;
 
-    const parentLocation = geoLocations.find(({ value }) => +row[value] === 1);
+    const parentLocation = geoLocations.find(({ value }) => +row[value] === 1 && value !== 'Air Force');
     const { locations } = parentLocation;
 
     const locationExists = locations.find(({ value }) => value === +FIPS);
@@ -184,7 +184,7 @@ predictionsTSDays = getPredictionColumns(caaSimData);
 caaSimData.forEach((row, index) => {
     const { Sim_ID, FIPS, Run_Type } = row;
 
-    const parentLocation = geoLocations.find(({ value }) => +row[value] === 1);
+    const parentLocation = geoLocations.find(({ value }) => +row[value] === 1 && value !== 'Air Force');
     const { locations } = parentLocation;
 
     // xy points
@@ -202,7 +202,7 @@ predictionsTSDays = getPredictionColumns(lanlSimData);
 lanlSimData.forEach((row, index) => {
     const { Sim_ID, FIPS, Run_Type } = row;
 
-    const parentLocation = geoLocations.find(({ value }) => +row[value] === 1);
+    const parentLocation = geoLocations.find(({ value }) => +row[value] === 1 && value !== 'Air Force');
     const { locations } = parentLocation;
 
     // xy points
@@ -221,7 +221,7 @@ predictionsTSDays = getPredictionColumns(utSimData);
 utSimData.forEach((row, index) => {
     const { Sim_ID, FIPS, Run_Type } = row;
 
-    const parentLocation = geoLocations.find(({ value }) => +row[value] === 1);
+    const parentLocation = geoLocations.find(({ value }) => +row[value] === 1 && value !== 'Air Force');
     const { locations } = parentLocation;
 
     // xy points
@@ -240,7 +240,7 @@ predictionsTSDays = getPredictionColumns(yygSimData);
 yygSimData.forEach((row, index) => {
     const { Sim_ID, FIPS, Run_Type } = row;
 
-    const parentLocation = geoLocations.find(({ value }) => +row[value] === 1);
+    const parentLocation = geoLocations.find(({ value }) => +row[value] === 1 && value !== 'Air Force');
     const { locations } = parentLocation;
 
     // xy points
@@ -263,7 +263,7 @@ exailSimData.forEach((row, index) => {
 
     if (!standardDeviationRunType) {
         // Mean Run type
-        const parentLocation = geoLocations.find(({ value }) => +row[value] === 1);
+        const parentLocation = geoLocations.find(({ value }) => +row[value] === 1 && value !== 'Air Force');
         const { locations } = parentLocation;
 
         // xy points
