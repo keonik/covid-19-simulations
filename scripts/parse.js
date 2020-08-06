@@ -346,7 +346,7 @@ geoOrganizations = geoOrganizations.map((geoOrg) => {
     //convert ANG to Air Force National Guard
     let locations = geoOrg.locations.map((geoOrg) => {
         if (geoOrg.label === 'ANG') {
-            return { ...geoOrg, label: 'Air Force National Guard' };
+            return { ...geoOrg, label: 'Air National Guard' };
         }
         return geoOrg;
     });
