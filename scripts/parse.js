@@ -343,8 +343,19 @@ geoLocations.forEach((parentLocation) => {
 });
 
 geoOrganizations = geoOrganizations.map((geoOrg) => {
-    const locations = sortBy(geoOrg.locations, ['label']);
+    //convert ANG to Air Force National Guard
+    let locations = geoOrg.locations.map((geoOrg) => {
+        if (geoOrg.label === 'ANG') {
+            return { ...geoOrg, label: 'Air Force National Guard' };
+        }
+        return geoOrg;
+    });
+    // sort by label
+    locations = sortBy(locations, ['label']);
+
     if (!locations[0].options) return { ...geoOrg, locations };
+
+    // sort nested options by label
     return {
         ...geoOrg,
         locations: locations.map((loc) => {
