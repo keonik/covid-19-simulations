@@ -351,18 +351,18 @@ geoOrganizations = geoOrganizations.map((geoOrg) => {
         return geoOrg;
     });
     // sort by label
-    locations = sortBy(locations, ['label']);
+    locations = [{ value: '0', label: 'All' }, ...sortBy(locations, ['label'])];
 
-    if (!locations[0].options) return { ...geoOrg, locations };
+    if (!locations[1].options) return { ...geoOrg, locations };
 
     // sort nested options by label
     return {
         ...geoOrg,
         locations: locations.map((loc) => {
-            return { ...loc, options: sortBy(loc.options, ['label']) };
+            return { ...loc, options: sortBy(loc?.options, ['label']) };
         }),
     };
 });
 
-writeFileSync('./data/selectors/geo-organizations-v2.json', JSON.stringify(geoOrganizations), 'utf8');
+writeFileSync('./data/selectors/geo-organizations-v3.json', JSON.stringify(geoOrganizations), 'utf8');
 console.log(`finished writing geo organizations`);
