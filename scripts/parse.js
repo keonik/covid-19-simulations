@@ -378,7 +378,7 @@ geoOrganizations = geoOrganizations.map((geoOrg) => {
                 };
             }
             // don't add all button to counties
-            if (geoOrg.value !== 'C') {
+            if (geoOrg.value === 'C') {
                 return { ...loc, options: sortBy(loc?.options, ['label']) };
             }
             // add All option to the beginning
