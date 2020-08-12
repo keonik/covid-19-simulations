@@ -367,6 +367,7 @@ geoOrganizations = geoOrganizations.map((geoOrg) => {
     return {
         ...geoOrg,
         locations: locations.map((loc) => {
+            // Air Force has a Fourth tier (Major commands)
             if (loc.label === 'Air Force') {
                 return {
                     ...loc,
@@ -376,6 +377,11 @@ geoOrganizations = geoOrganizations.map((geoOrg) => {
                     })),
                 };
             }
+            // don't add all button to counties
+            if (geoOrg.value !== 'C') {
+                return { ...loc, options: sortBy(loc?.options, ['label']) };
+            }
+            // add All option to the beginning
             return { ...loc, options: [{ value: '0', label: 'All' }, ...sortBy(loc?.options, ['label'])] };
         }),
     };
