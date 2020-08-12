@@ -355,11 +355,28 @@ geoOrganizations = geoOrganizations.map((geoOrg) => {
 
     if (!locations[1]?.options) return { ...geoOrg, locations: [{ value: '0', label: 'All' }, ...locations] };
 
+    if (locations[1]?.options?.[0]?.options?.length > 0) {
+        return {
+            ...geoOrg,
+            locations: locations.map((loc) => {
+                return { ...loc, options: [{ value: '0', label: 'All' }, ...sortBy(loc?.options, ['label'])] };
+            }),
+        };
+    }
     // sort nested options by label
     return {
         ...geoOrg,
         locations: locations.map((loc) => {
-            return { ...loc, options: sortBy(loc?.options, ['label']) };
+            if (loc.label === 'Air Force') {
+                return {
+                    ...loc,
+                    options: sortBy(loc?.options, ['label']).map((opt) => ({
+                        ...opt,
+                        options: [{ value: '0', label: 'All' }, ...sortBy(opt?.options, ['label'])],
+                    })),
+                };
+            }
+            return { ...loc, options: [{ value: '0', label: 'All' }, ...sortBy(loc?.options, ['label'])] };
         }),
     };
 });

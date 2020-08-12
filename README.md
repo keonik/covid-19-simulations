@@ -38,12 +38,16 @@ Stores all json files in hierarchy as follows
 -   countries
     -   unique FIPS to country
     -   currently only United States
+    -   100,000 indexed to avoid overlap
 -   states
     -   unique FIPS to state
     -   US States
 -   counties
     -   unique US County FIPS
     -   US Counties
+-   selectors (WIP)
+    -   used for select drop down options
+        -   Nations, US State, US Counties by State
 
 #### scripts
 
