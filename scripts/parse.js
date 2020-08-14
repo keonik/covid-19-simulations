@@ -7,7 +7,7 @@ const caaFile = readFileSync('./files/SimCommandCAA-latest.csv', 'utf-8');
 const lanlFile = readFileSync('./files/SimCommandLANL-latest.csv', 'utf-8');
 const utFile = readFileSync('./files/SimCommandUT-latest.csv', 'utf-8');
 const yygFile = readFileSync('./files/SimCommandYYG-latest.csv', 'utf-8');
-const exailFile = readFileSync('./files/SimCommandXAIL-latest.csv', 'utf-8');
+const exailFile = readFileSync('./files/Alpha1_All_SimCommand_8-10.csv', 'utf-8');
 
 const ihmeSimData = csvParse(ihmeFile);
 const caaSimData = csvParse(caaFile);
@@ -264,6 +264,12 @@ exailSimData.forEach((row, index) => {
     if (!standardDeviationRunType) {
         // Mean Run type
         const parentLocation = geoLocations.find(({ value }) => +row[value] === 1 && value !== 'Air Force');
+        if (!parentLocation)
+            console.log(
+                index,
+                row.Location,
+                geoLocations.forEach(({ value }) => console.log(value))
+            );
         const { locations } = parentLocation;
 
         // xy points
@@ -342,7 +348,8 @@ geoLocations.forEach((parentLocation) => {
     });
 });
 
-geoOrganizations = geoOrganizations.map((geoOrg) => {
+// All options
+const allGeoOrganizations = geoOrganizations.map((geoOrg) => {
     //convert ANG to Air Force National Guard
     let locations = geoOrg.locations.map((location) => {
         if (location.label === 'ANG') {
@@ -387,5 +394,51 @@ geoOrganizations = geoOrganizations.map((geoOrg) => {
     };
 });
 
-writeFileSync('./data/selectors/geo-organizations-v3.json', JSON.stringify(geoOrganizations), 'utf8');
+geoOrganizations = geoOrganizations.map((geoOrg) => {
+    //convert ANG to Air Force National Guard
+    let locations = geoOrg.locations.map((location) => {
+        if (location.label === 'ANG') {
+            return { ...location, label: 'Air National Guard' };
+        }
+        return location;
+    });
+    // sort by label
+    locations = sortBy(locations, ['label']);
+
+    if (!locations[1]?.options) return { ...geoOrg, locations };
+
+    if (locations[1]?.options?.[0]?.options?.length > 0) {
+        return {
+            ...geoOrg,
+            locations: locations.map((loc) => {
+                return { ...loc, options: sortBy(loc?.options, ['label']) };
+            }),
+        };
+    }
+    // sort nested options by label
+    return {
+        ...geoOrg,
+        locations: locations.map((loc) => {
+            // Air Force has a Fourth tier (Major commands)
+            if (loc.label === 'Air Force') {
+                return {
+                    ...loc,
+                    options: sortBy(loc?.options, ['label']).map((opt) => ({
+                        ...opt,
+                        options: sortBy(opt?.options, ['label']),
+                    })),
+                };
+            }
+            // don't add all button to counties
+            if (geoOrg.value === 'C') {
+                return { ...loc, options: sortBy(loc?.options, ['label']) };
+            }
+            // add All option to the beginning
+            return { ...loc, options: sortBy(loc?.options, ['label']) };
+        }),
+    };
+});
+
+writeFileSync('./data/selectors/geo-organizations-v2.json', JSON.stringify(geoOrganizations), 'utf8');
+writeFileSync('./data/selectors/geo-organizations-v3.json', JSON.stringify(allGeoOrganizations), 'utf8');
 console.log(`finished writing geo organizations`);
