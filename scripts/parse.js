@@ -7,7 +7,7 @@ const caaFile = readFileSync('./files/SimCommandCAA-latest.csv', 'utf-8');
 const lanlFile = readFileSync('./files/SimCommandLANL-latest.csv', 'utf-8');
 const utFile = readFileSync('./files/SimCommandUT-latest.csv', 'utf-8');
 const yygFile = readFileSync('./files/SimCommandYYG-latest.csv', 'utf-8');
-const exailFile = readFileSync('./files/Alpha1_All_SimCommand_8-10.csv', 'utf-8');
+const exailFile = readFileSync('./files/SimCommandXAIL-latest.csv', 'utf-8');
 
 const ihmeSimData = csvParse(ihmeFile);
 const caaSimData = csvParse(caaFile);
@@ -71,6 +71,20 @@ function pushToGeoOrganization(Type_Indicator, Location, FIPS, parent) {
             }
             break;
         }
+        case 'GB': {
+            const index = geoOrganizations[2].locations.findIndex(({ label }) => label === parent);
+            if (index !== -1) {
+                geoOrganizations[2].locations[index].options.push({
+                    value: FIPS,
+                    label: Location,
+                });
+            } else {
+                geoOrganizations[2].locations.push({
+                    label: parent,
+                    options: [{ value: FIPS, label: Location }],
+                });
+            }
+        }
         case 'C': {
             const index = geoOrganizations[3].locations.findIndex(
                 ({ label }) => label === parent.replace('County_', '')
@@ -86,6 +100,7 @@ function pushToGeoOrganization(Type_Indicator, Location, FIPS, parent) {
 
             break;
         }
+
         default:
             break;
     }
@@ -267,8 +282,8 @@ exailSimData.forEach((row, index) => {
         if (!parentLocation)
             console.log(
                 index,
-                row.Location,
-                geoLocations.forEach(({ value }) => console.log(value))
+                row
+                // geoLocations.forEach(({ value }) => console.log(value))
             );
         const { locations } = parentLocation;
 
