@@ -130,11 +130,11 @@ function formatPoints(PredictionTSDays, row) {
     // all prediction values into array [{x: null, y :Date}, {x: 0, y: Date}]
     PredictionTSDays.forEach((colName) => {
         const y = colName.replace('Prediction_TS_Day_', '');
-        const value = parseFloat(row[colName]);
+        const value = parseFloat(row[colName]).toFixed(2);
 
         if (value) {
             if (value > 0) {
-                points.push({ x: +parseInt(value), y });
+                points.push({ x: +value, y });
             }
             // set minimum 0 (show no negatives)
             else {
@@ -315,14 +315,14 @@ exailSimData.forEach((row, index) => {
             if (!x) {
                 return { x, y };
             }
-            return { x: x + stdPoints[index]?.x, y };
+            return { x: +(x + stdPoints[index]?.x).toFixed(2), y };
         });
 
         const lowerPoints = points.map(({ x, y }, index) => {
             if (!x) {
                 return { x, y };
             }
-            const xVal = x - stdPoints[index]?.x;
+            const xVal = +(x - stdPoints[index]?.x).toFixed(2);
             if (xVal < 0) {
                 return { x: 0, y };
             }
