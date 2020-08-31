@@ -22,7 +22,7 @@ let geoOrganizations = [
     { value: 'G', label: 'Nations', disabled: false, locations: [], folder: 'data/countries' },
     {
         value: 'S',
-        label: 'US States',
+        label: 'US States and Territories',
         disabled: false,
         locations: [],
         folder: 'data/states',
