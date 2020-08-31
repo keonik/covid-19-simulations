@@ -24,7 +24,7 @@ let geoOrganizations = [
         value: 'S',
         label: 'US States',
         disabled: false,
-        locations: [{ label: 'Guam', value: 66000 }],
+        locations: [],
         folder: 'data/states',
     },
     {
@@ -70,10 +70,23 @@ function pushToGeoOrganization(Type_Indicator, Location, FIPS, parent) {
                     geoOrganizations[2].locations[index].options.push({ value: FIPS, label: Location });
                 }
             } else {
-                geoOrganizations[2].locations.push({
-                    label: parent,
-                    options: [{ value: FIPS, label: Location }],
-                });
+                if (parent === 'States') {
+                    const airForceIndex = geoOrganizations[2].locations.findIndex(({ label }) => label === 'Air Force');
+                    const pacafIndex = geoOrganizations[2].locations[airForceIndex]?.options.findIndex(
+                        ({ label }) => label === 'PACAF'
+                    );
+                    if (pacafIndex !== -1) {
+                        geoOrganizations[2].locations?.[airForceIndex]?.options?.[pacafIndex].options.push({
+                            value: FIPS,
+                            label: Location,
+                        });
+                    }
+                } else {
+                    geoOrganizations[2].locations.push({
+                        label: parent,
+                        options: [{ value: FIPS, label: Location }],
+                    });
+                }
             }
             break;
         }
@@ -284,16 +297,9 @@ exailSimData.forEach((row, index) => {
 
     if (!standardDeviationRunType) {
         // Mean Run type
-        const parentLocation =
-            geoLocations.find(({ value }) => +row[value] === 1 && value !== 'Air Force') || geoLocations[1];
+        let parentLocation = geoLocations.find(({ value }) => +row[value] === 1 && value !== 'Air Force');
         if (!parentLocation) {
-            console.log(
-                index,
-                row,
-                geoLocations.forEach(({ value }) => {
-                    console.log(value, row[value]);
-                })
-            );
+            parentLocation = geoLocations[1];
         }
         const { locations } = parentLocation;
 
