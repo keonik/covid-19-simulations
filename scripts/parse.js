@@ -20,7 +20,13 @@ const MAJOR_COMMANDS = ['ACC', 'AETC', 'AFGSC', 'AFMC', 'AFRC', 'AFSOC', 'AFSPC'
 
 let geoOrganizations = [
     { value: 'G', label: 'Nations', disabled: false, locations: [], folder: 'data/countries' },
-    { value: 'S', label: 'US States', disabled: false, locations: [], folder: 'data/states' },
+    {
+        value: 'S',
+        label: 'US States',
+        disabled: false,
+        locations: [{ label: 'Guam', value: 66000 }],
+        folder: 'data/states',
+    },
     {
         value: 'B',
         label: 'US Bases and Commands',
@@ -278,13 +284,17 @@ exailSimData.forEach((row, index) => {
 
     if (!standardDeviationRunType) {
         // Mean Run type
-        const parentLocation = geoLocations.find(({ value }) => +row[value] === 1 && value !== 'Air Force');
-        if (!parentLocation)
+        const parentLocation =
+            geoLocations.find(({ value }) => +row[value] === 1 && value !== 'Air Force') || geoLocations[1];
+        if (!parentLocation) {
             console.log(
                 index,
-                row
-                // geoLocations.forEach(({ value }) => console.log(value))
+                row,
+                geoLocations.forEach(({ value }) => {
+                    console.log(value, row[value]);
+                })
             );
+        }
         const { locations } = parentLocation;
 
         // xy points
