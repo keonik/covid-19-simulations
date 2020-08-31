@@ -5,6 +5,9 @@ cache:
     directories:
         - ./node_modules
 
+git:
+    depth: 2
+
 before_deploy:
     # - sudo apt-get install zip unzip
     # - 'npm run fetch-latest'
