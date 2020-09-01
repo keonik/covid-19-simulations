@@ -1,4 +1,5 @@
 files
+GENDATA_OUTPUT
 node_modules
 report.*
 .DS_Store
