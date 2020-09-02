@@ -53,6 +53,6 @@ Stores all json files in hierarchy as follows
 
 scripts used to parse csv's into json format
 
-##### `npm run parse`
+##### `npm run build`
 
-If you have access to the csv's you can manipulate the scripts/parse.js file to tweak the output data under the data directory
+Fetches files based on date in script (need to update to fetch yesterday's date automatically), unzips it, and runs the parse script.
