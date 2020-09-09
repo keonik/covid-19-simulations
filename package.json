@@ -16,9 +16,8 @@
     "scripts": {
         "build": "npm run clean && npm run fetch && npm run unzip && npm run parse",
         "clean": "rm -rf *.zip && rm -rf GENDATA_OUTPUT/",
-        "fetch": "wget https://s3.us-gov-west-1.amazonaws.com/ultraviz/8-31.zip",
-        "parse": "babel-node --max-old-space-size=16384 scripts/parse.js",
-        "unzip": "unzip 8-31.zip"
+        "fetch": "sh ./fetchFiles.sh",
+        "parse": "babel-node --max-old-space-size=16384 scripts/parse.js"
     },
     "repository": {
         "type": "git",

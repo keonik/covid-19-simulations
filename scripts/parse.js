@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { sortBy } from 'lodash';
 // relies on files under files directory
 const ihmeFile = readFileSync('./GENDATA_OUTPUT/SimCommandIHME-latest.csv', 'utf-8');
-const caaFile = readFileSync('./GENDATA_OUTPUT/SimCommandCAA-latest.csv', 'utf-8');
+const caaFile = readFileSync('./files/SimCommandCAA-latest.csv', 'utf-8');
 const lanlFile = readFileSync('./GENDATA_OUTPUT/SimCommandLANL-latest.csv', 'utf-8');
 const utFile = readFileSync('./GENDATA_OUTPUT/SimCommandUT-latest.csv', 'utf-8');
 const yygFile = readFileSync('./GENDATA_OUTPUT/SimCommandYYG-latest.csv', 'utf-8');
