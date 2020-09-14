@@ -1,6 +1,6 @@
 files
-GENDATA_OUTPUT
 node_modules
+data
 report.*
 .DS_Store
 *.zip
