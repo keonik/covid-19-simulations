@@ -27,7 +27,18 @@ Simulation Sources
 
 -   [Example](https://keonik.github.io/covid-19-simulations/data/states/2000.json)
 
-##
+## Requirements to Edit
+
+-   [nodejs](https://nodejs.org/en/)
+-   `.env` file with the following keys
+
+    -   AWS_ACCESS_KEY_ID
+    -   AWS_SECRET_ACCESS_KEY
+    -   AWS_FOUO_BUCKET_NAME
+    -   AWS_BUCKET_NAME
+    -   AWS_REGION
+
+    Contact KBR to obtain access keys
 
 ## Folder structure
 
@@ -56,3 +67,24 @@ scripts used to parse csv's into json format
 ##### `npm run build`
 
 Fetches files based on date in script (need to update to fetch yesterday's date automatically), unzips it, and runs the parse script.
+
+##### `npm run parse`
+
+Runs a script located at scripts/parse.js
+
+##### `npm run clean`
+
+Removes ignored files to make fetching fresh
+
+##### `npm run fetch`
+
+Fetches the latest files, unzips them, and places them in the files directory
+
+-   Requires a `.env` file with all the aws associated keys to access the buckets
+    -   keys
+        -   AWS_ACCESS_KEY_ID
+        -   AWS_SECRET_ACCESS_KEY
+        -   AWS_FOUO_BUCKET_NAME
+        -   AWS_BUCKET_NAME
+        -   AWS_REGION
+    -   Contact KBR to obtain access keys

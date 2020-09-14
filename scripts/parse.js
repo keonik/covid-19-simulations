@@ -2,12 +2,12 @@ import { csvParse } from 'd3-dsv';
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { sortBy } from 'lodash';
 // relies on files under files directory
-const ihmeFile = readFileSync('./GENDATA_OUTPUT/SimCommandIHME-latest.csv', 'utf-8');
+const ihmeFile = readFileSync('./files/SimCommandIHME-latest.csv', 'utf-8');
 const caaFile = readFileSync('./files/SimCommandCAA-latest.csv', 'utf-8');
-const lanlFile = readFileSync('./GENDATA_OUTPUT/SimCommandLANL-latest.csv', 'utf-8');
-const utFile = readFileSync('./GENDATA_OUTPUT/SimCommandUT-latest.csv', 'utf-8');
-const yygFile = readFileSync('./GENDATA_OUTPUT/SimCommandYYG-latest.csv', 'utf-8');
-const exailFile = readFileSync('./GENDATA_OUTPUT/SimCommandXAIL-latest.csv', 'utf-8');
+const lanlFile = readFileSync('./files/SimCommandLANL-latest.csv', 'utf-8');
+const utFile = readFileSync('./files/SimCommandUT-latest.csv', 'utf-8');
+const yygFile = readFileSync('./files/SimCommandYYG-latest.csv', 'utf-8');
+const exailFile = readFileSync('./files/SimCommandXAIL-latest.csv', 'utf-8');
 
 const ihmeSimData = csvParse(ihmeFile);
 const caaSimData = csvParse(caaFile);
@@ -185,9 +185,12 @@ ihmeSimData.forEach((row, index) => {
     const { Sim_ID, Location, FIPS, Type_Indicator, Run_Type } = row;
 
     const parentLocation = geoLocations.find(({ value }) => +row[value] === 1 && value !== 'Air Force');
-    const { locations } = parentLocation;
+    if (!parentLocation?.locations) {
+        console.log(parentLocation, FIPS, Type_Indicator, Location);
+    }
+    const locations = parentLocation?.locations;
 
-    const locationExists = locations.find(({ value }) => value === +FIPS);
+    const locationExists = locations?.find(({ value }) => value === +FIPS);
 
     // xy points
     const points = formatPoints(predictionsTSDays, row);
